@@ -1,0 +1,104 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local SPEED = 350
+local speedEnabled = false
+local antiGuardEnabled = false
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "modino"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.fromOffset(250, 190)
+frame.Position = UDim2.new(0.5, -125, 0.5, -95)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -45, 0, 40)
+title.Position = UDim2.fromOffset(10, 0)
+title.BackgroundTransparency = 1
+title.Text = "modino"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextSize = 22
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = frame
+
+local close = Instance.new("TextButton")
+close.Size = UDim2.fromOffset(35, 35)
+close.Position = UDim2.new(1, -40, 0, 3)
+close.BackgroundTransparency = 1
+close.Text = "✕"
+close.TextColor3 = Color3.new(1, 1, 1)
+close.TextSize = 20
+close.Parent = frame
+
+close.MouseButton1Click:Connect(function()
+	gui.Enabled = false
+end)
+
+local speedButton = Instance.new("TextButton")
+speedButton.Size = UDim2.new(1, -20, 0, 50)
+speedButton.Position = UDim2.fromOffset(10, 48)
+speedButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+speedButton.Text = "Speed Override: OFF"
+speedButton.TextColor3 = Color3.new(1, 1, 1)
+speedButton.TextSize = 16
+speedButton.Font = Enum.Font.GothamBold
+speedButton.Parent = frame
+
+local speedCorner = Instance.new("UICorner")
+speedCorner.CornerRadius = UDim.new(0, 7)
+speedCorner.Parent = speedButton
+
+local antiGuardButton = Instance.new("TextButton")
+antiGuardButton.Size = UDim2.new(1, -20, 0, 50)
+antiGuardButton.Position = UDim2.fromOffset(10, 105)
+antiGuardButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+antiGuardButton.Text = "Anti Guard: OFF"
+antiGuardButton.TextColor3 = Color3.new(1, 1, 1)
+antiGuardButton.TextSize = 16
+antiGuardButton.Font = Enum.Font.GothamBold
+antiGuardButton.Parent = frame
+
+local guardCorner = Instance.new("UICorner")
+guardCorner.CornerRadius = UDim.new(0, 7)
+guardCorner.Parent = antiGuardButton
+
+local function updateSpeed()
+	local character = player.Character
+	if not character then return end
+
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid.WalkSpeed = speedEnabled and SPEED or 16
+	end
+end
+
+speedButton.MouseButton1Click:Connect(function()
+	speedEnabled = not speedEnabled
+	speedButton.Text = speedEnabled and "Speed Override: ON (350)" or "Speed Override: OFF"
+	updateSpeed()
+end)
+
+antiGuardButton.MouseButton1Click:Connect(function()
+	antiGuardEnabled = not antiGuardEnabled
+	antiGuardButton.Text = antiGuardEnabled and "Anti Guard: ON" or "Anti Guard: OFF"
+	player:SetAttribute("AntiGuard", antiGuardEnabled)
+end)
+
+player.CharacterAdded:Connect(function(character)
+	character:WaitForChild("Humanoid")
+	updateSpeed()
+	player:SetAttribute("AntiGuard", antiGuardEnabled)
+end)
+
+player:SetAttribute("AntiGuard", false)
